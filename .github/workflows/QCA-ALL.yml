@@ -34,10 +34,10 @@ jobs:
       matrix:
         TARGET: [IPQ60XX-WIFI-NO]
         REPO_INFO:
-          - {SOURCE: coolsnowwolf/lede, BRANCH: master, NAME: LEDE, SUFFIX: LEDE}
-          - {SOURCE: coolsnowwolf/lede, BRANCH: master, NAME: LEDE-FW4, SUFFIX: LEDE-FW4}
+          #- {SOURCE: coolsnowwolf/lede, BRANCH: master, NAME: LEDE, SUFFIX: LEDE}
+          #- {SOURCE: coolsnowwolf/lede, BRANCH: master, NAME: LEDE-FW4, SUFFIX: LEDE-FW4}
           - {SOURCE: VIKINGYFY/immortalwrt, BRANCH: main, NAME: OWRT, SUFFIX: IMM}
-          - {SOURCE: LiBwrt-op/openwrt-6.x, BRANCH: openwrt-24.10, NAME: LibWRT, SUFFIX: IMM}
+          #- {SOURCE: LiBwrt-op/openwrt-6.x, BRANCH: openwrt-24.10, NAME: LibWRT, SUFFIX: IMM}
           #- {SOURCE: immortalwrt/immortalwrt, BRANCH: openwrt-24.10, NAME: ImmortalWRT, SUFFIX: IMM}
 
     #调用公用编译核心WRT-CORE.yml
