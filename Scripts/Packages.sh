@@ -8,7 +8,7 @@ UPDATE_PACKAGE() {
 	local PKG_SPECIAL=$4
 	local REPO_NAME=$(echo $PKG_REPO | cut -d '/' -f 2)
 
-	rm -rf $(find ../feeds/luci/ ../feeds/packages/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune)
+	rm -rf $(find ./ ../feeds/luci/ ../feeds/packages/ -maxdepth 3 -type d -iname "*$PKG_NAME*" -prune)
 
 	git clone --depth=1 --single-branch --branch $PKG_BRANCH "https://github.com/$PKG_REPO.git"
 
@@ -22,15 +22,15 @@ UPDATE_PACKAGE() {
 
 #UPDATE_PACKAGE "包名" "项目地址" "项目分支" "pkg/name，可选，pkg为从大杂烩中单独提取包名插件；name为重命名为包名"
 UPDATE_PACKAGE "argon" "jerrykuku/luci-theme-argon" "master"
-# UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "js"
+UPDATE_PACKAGE "kucat" "sirpdboy/luci-theme-kucat" "js"
 
 UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "main"
-# UPDATE_PACKAGE "mihomo" "morytyann/OpenWrt-mihomo" "main"
-# UPDATE_PACKAGE "nekoclash" "Thaolga/luci-app-nekoclash" "main"
-# UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
+UPDATE_PACKAGE "mihomo" "morytyann/OpenWrt-mihomo" "main"
+UPDATE_PACKAGE "openclash" "vernesong/OpenClash" "dev" "pkg"
 UPDATE_PACKAGE "passwall" "xiaorouji/openwrt-passwall" "main" "pkg"
 UPDATE_PACKAGE "ssr-plus" "fw876/helloworld" "master"
-# UPDATE_PACKAGE "alist" "sbwml/luci-app-alist" "main" // alist 替换会导致编译错误
+
+UPDATE_PACKAGE "alist" "sbwml/luci-app-alist" "main"
 UPDATE_PACKAGE "mosdns" "sbwml/luci-app-mosdns" "v5"
 UPDATE_PACKAGE "vnt" "lazyoop/networking-artifact" "main" "pkg"
 UPDATE_PACKAGE "easytier" "lazyoop/networking-artifact" "main" "pkg"
@@ -71,9 +71,9 @@ UPDATE_VERSION() {
 		if [[ $NEW_VER =~ ^[0-9].* ]] && dpkg --compare-versions "$OLD_VER" lt "$NEW_VER"; then
 			sed -i "s/PKG_VERSION:=.*/PKG_VERSION:=$NEW_VER/g" "$PKG_FILE"
 			sed -i "s/PKG_HASH:=.*/PKG_HASH:=$NEW_HASH/g" "$PKG_FILE"
-			echo "$PKG_FILE $NEW_VER version has been updated!"
+			echo "$PKG_FILE version has been updated!"
 		else
-			echo "$PKG_FILE $NEW_VER version is already the latest!"
+			echo "$PKG_FILE version is already the latest!"
 		fi
 	done
 }
@@ -81,6 +81,3 @@ UPDATE_VERSION() {
 #UPDATE_VERSION "软件包名" "测试版，true，可选，默认为否"
 UPDATE_VERSION "sing-box"
 UPDATE_VERSION "tailscale"
-UPDATE_VERSION "alist"
-#修复Openvpnserver一键生成证书
-UPDATE_VERSION "openvpn-easy-rsa" 
