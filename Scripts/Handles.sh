@@ -1,26 +1,35 @@
 #!/bin/bash
 
-PKG_PATCH="$GITHUB_WORKSPACE/wrt/package/"
+PKG_PATH="$GITHUB_WORKSPACE/wrt/package/"
 
 #预置HomeProxy数据
 if [ -d *"homeproxy"* ]; then
-	HP_RULES="surge"
-	HP_PATCH="homeproxy/root/etc/homeproxy"
+	HP_RULE="surge"
+	HP_PATH="homeproxy/root/etc/homeproxy"
 
-	chmod +x ./$HP_PATCH/scripts/*
-	rm -rf ./$HP_PATCH/resources/*
+	rm -rf ./$HP_PATH/resources/*
 
-	git clone -q --depth=1 --single-branch --branch "release" "https://github.com/Loyalsoldier/surge-rules.git" ./$HP_RULES/
-	cd ./$HP_RULES/ && RES_VER=$(git log -1 --pretty=format:'%s' | grep -o "[0-9]*")
+	git clone -q --depth=1 --single-branch --branch "release" "https://github.com/Loyalsoldier/surge-rules.git" ./$HP_RULE/
+	cd ./$HP_RULE/ && RES_VER=$(git log -1 --pretty=format:'%s' | grep -o "[0-9]*")
 
 	echo $RES_VER | tee china_ip4.ver china_ip6.ver china_list.ver gfw_list.ver
 	awk -F, '/^IP-CIDR,/{print $2 > "china_ip4.txt"} /^IP-CIDR6,/{print $2 > "china_ip6.txt"}' cncidr.txt
 	sed 's/^\.//g' direct.txt > china_list.txt ; sed 's/^\.//g' gfw.txt > gfw_list.txt
-	mv -f ./{china_*,gfw_list}.{ver,txt} ../$HP_PATCH/resources/
+	mv -f ./{china_*,gfw_list}.{ver,txt} ../$HP_PATH/resources/
 
-	cd .. && rm -rf ./$HP_RULES/
+	cd .. && rm -rf ./$HP_RULE/
 
-	cd $PKG_PATCH && echo "homeproxy date has been updated!"
+	cd $PKG_PATH && echo "homeproxy date has been updated!"
+fi
+
+#修改argon主题字体和颜色
+if [ -d *"luci-theme-argon"* ]; then
+	cd ./luci-theme-argon/
+
+	sed -i '/font-weight:/ {/normal\|!important/! s/\(font-weight:\s*\)[^;]*;/\1normal;/}' $(find ./luci-theme-argon -type f -iname "*.css")
+	sed -i "s/#5e72e4/#31a1a1/; s/#483d8b/#31a1a1/; s/'0.2'/'0.5'/; s/'none'/'bing'/" ./luci-app-argon-config/root/etc/config/argon
+
+	cd $PKG_PATH && echo "theme-argon has been fixed!"
 fi
 
 #移除Shadowsocks组件
@@ -30,7 +39,7 @@ if [ -f "$PW_FILE" ]; then
 	sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR/,/default n/d' $PW_FILE
 	sed -i '/Shadowsocks_NONE/d; /Shadowsocks_Libev/d; /ShadowsocksR/d' $PW_FILE
 
-	cd $PKG_PATCH && echo "passwall has been fixed!"
+	cd $PKG_PATH && echo "passwall has been fixed!"
 fi
 
 SP_FILE=$(find ./ -maxdepth 3 -type f -wholename "*/luci-app-ssr-plus/Makefile")
@@ -39,7 +48,7 @@ if [ -f "$SP_FILE" ]; then
 	sed -i '/config PACKAGE_$(PKG_NAME)_INCLUDE_ShadowsocksR/,/x86_64/d' $SP_FILE
 	sed -i '/Shadowsocks_NONE/d; /Shadowsocks_Libev/d; /ShadowsocksR/d' $SP_FILE
 
-	cd $PKG_PATCH && echo "ssr-plus has been fixed!"
+	cd $PKG_PATH && echo "ssr-plus has been fixed!"
 fi
 
 #修复TailScale配置文件冲突
@@ -47,5 +56,5 @@ TS_FILE=$(find ../feeds/packages/ -maxdepth 3 -type f -wholename "*/tailscale/Ma
 if [ -f "$TS_FILE" ]; then
 	sed -i '/\/files/d' $TS_FILE
 
-	cd $PKG_PATCH && echo "tailscale has been fixed!"
+	cd $PKG_PATH && echo "tailscale has been fixed!"
 fi
